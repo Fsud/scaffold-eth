@@ -1,4 +1,5 @@
-pragma solidity >=0.6.0 <0.7.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
 
 contract ExampleExternalContract {
 
@@ -7,5 +8,9 @@ contract ExampleExternalContract {
   function complete() public payable {
     completed = true;
   }
+
+  // function completed() external returns (bool){
+  //   return completed;
+  // }
 
 }
