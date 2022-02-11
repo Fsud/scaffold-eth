@@ -1,9 +1,14 @@
-pragma solidity >=0.6.0 <0.7.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
 
-//import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // learn more: https://docs.openzeppelin.com/contracts/3.x/erc20
 
-contract YourToken {
+contract YourToken is ERC20{
     //ToDo: add constructor and mint tokens for deployer,
     //you can use the above import for ERC20.sol. Read the docs ^^^
+    constructor() ERC20("Scaffold ETH Token", "SET") {
+        _mint(msg.sender, 1000 * 10 ** 18);
+    }
+
 }

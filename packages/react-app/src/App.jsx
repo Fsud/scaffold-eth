@@ -252,7 +252,7 @@ function App(props) {
 
   // Then read your DAI balance like:
   const myMainnetDAIBalance = useContractReader(mainnetContracts, "DAI", "balanceOf", [
-    "0x34aA3F359A9D614239015126635CE7732c18fDF3",
+    "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
   ]);
 
   const vendorAddress = readContracts && readContracts.Vendor && readContracts.Vendor.address;
@@ -264,6 +264,8 @@ function App(props) {
   console.log("🏵 vendorTokenBalance:", vendorTokenBalance ? ethers.utils.formatEther(vendorTokenBalance) : "...");
 
   const yourTokenBalance = useContractReader(readContracts, "YourToken", "balanceOf", [address]);
+  console.log("🏵 connect Address:", address ? address : "...");
+
   console.log("🏵 yourTokenBalance:", yourTokenBalance ? ethers.utils.formatEther(yourTokenBalance) : "...");
 
   const tokensPerEth = useContractReader(readContracts, "Vendor", "tokensPerEth");
@@ -482,10 +484,21 @@ function App(props) {
   console.log("📟 buyTokensEvents:", buyTokensEvents);
 
   const [tokenBuyAmount, setTokenBuyAmount] = useState();
+  const [tokenApproveAmount, setTokenApproveAmount] = useState();
+  const [tokenSellAmount, setTokenSellAmount] = useState();
+
 
   const ethCostToPurchaseTokens =
     tokenBuyAmount && tokensPerEth && ethers.utils.parseEther("" + tokenBuyAmount / parseFloat(tokensPerEth));
   console.log("ethCostToPurchaseTokens:", ethCostToPurchaseTokens);
+
+  const ethCostToApproveTokens =
+  tokenApproveAmount && tokensPerEth && ethers.utils.parseEther("" + tokenApproveAmount / parseFloat(tokensPerEth));
+
+  const ethCostToSellTokens =
+  tokenSellAmount && tokensPerEth && ethers.utils.parseEther("" + tokenSellAmount / parseFloat(tokensPerEth));
+
+
 
   const [tokenSendToAddress, setTokenSendToAddress] = useState();
   const [tokenSendAmount, setTokenSendAmount] = useState();
@@ -601,6 +614,60 @@ function App(props) {
                     }}
                   >
                     Buy Tokens
+                  </Button>
+                </div>
+              </Card>
+              <Card title="Approve Tokens" extra={<a href="#">code</a>}>
+                <div style={{ padding: 8 }}>
+                  <Input
+                    style={{ textAlign: "center" }}
+                    placeholder={"amount of tokens to approve"}
+                    value={tokenApproveAmount}
+                    onChange={e => {
+                      setTokenApproveAmount(e.target.value);
+                    }}
+                  />
+                  <Balance balance={ethCostToApproveTokens} dollarMultiplier={price} />
+                </div>
+
+                <div style={{ padding: 8 }}>
+                  <Button
+                    type={"primary"}
+                    loading={buying}
+                    onClick={async () => {
+                      setBuying(true);
+                      await tx(writeContracts.YourToken.approve(vendorAddress, ethers.utils.parseEther("" + tokenApproveAmount)));
+                      setBuying(false);
+                    }}
+                  >
+                    Approve Tokens
+                  </Button>
+                </div>
+              </Card>
+              <Card title="Sell Tokens" extra={<a href="#">code</a>}>
+                <div style={{ padding: 8 }}>
+                  <Input
+                    style={{ textAlign: "center" }}
+                    placeholder={"amount of tokens to sell"}
+                    value={tokenSellAmount}
+                    onChange={e => {
+                      setTokenSellAmount(e.target.value);
+                    }}
+                  />
+                  <Balance balance={ethCostToSellTokens} dollarMultiplier={price} />
+                </div>
+
+                <div style={{ padding: 8 }}>
+                  <Button
+                    type={"primary"}
+                    loading={buying}
+                    onClick={async () => {
+                      setBuying(true);
+                      await tx(writeContracts.Vendor.sellTokens(ethers.utils.parseEther("" + tokenSellAmount)));
+                      setBuying(false);
+                    }}
+                  >
+                    Sell Tokens
                   </Button>
                 </div>
               </Card>
